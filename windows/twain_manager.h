@@ -492,178 +492,178 @@ public:
         return;
     }
 
-    //////////////////////////////////////////////////////////////////////////////
-    /**
-     * Enables the source. The source will let us know when it is ready to scan by
-     * calling our registered callback function.
-     */
-    void EnableDS()
-    {
-        gpTwainApplicationCMD->m_DSMessage = 0;
-#ifdef TWNDS_OS_LINUX
-
-        int test;
-        sem_getvalue(&(gpTwainApplicationCMD->m_TwainEvent), &test);
-        while (test < 0)
-        {
-            sem_post(&(gpTwainApplicationCMD->m_TwainEvent)); // Event semaphore Handle
-            sem_getvalue(&(gpTwainApplicationCMD->m_TwainEvent), &test);
-        }
-        while (test > 0)
-        {
-            sem_wait(&(gpTwainApplicationCMD->m_TwainEvent)); // event semaphore handle
-            sem_getvalue(&(gpTwainApplicationCMD->m_TwainEvent), &test);
-        }
-
-#endif
-        // -Enable the data source. This puts us in state 5 which means that we
-        // have to wait for the data source to tell us to move to state 6 and
-        // start the transfer.  Once in state 5, no more set ops can be done on the
-        // caps, only get ops.
-        // -The scan will not start until the source calls the callback function
-        // that was registered earlier.
-#ifdef TWNDS_OS_WIN
-        if (!gpTwainApplicationCMD->enableDS(GetDesktopWindow(), FALSE))
-#else
-        if (!gpTwainApplicationCMD->enableDS(0, TRUE))
-#endif
-        {
-            return;
-        }
-
-#ifdef TWNDS_OS_WIN
-        // now we have to wait until we hear something back from the DS.
-        while (!gpTwainApplicationCMD->m_DSMessage)
-        {
-            TW_EVENT twEvent = {0};
-
-            // If we are using callbacks, there is nothing to do here except sleep
-            // and wait for our callback from the DS.  If we are not using them,
-            // then we have to poll the DSM.
-
-            // Pumping messages is for Windows only
-            MSG Msg;
-            if (!GetMessage((LPMSG)&Msg, NULL, 0, 0))
-            {
-                break; // WM_QUIT
-            }
-            twEvent.pEvent = (TW_MEMREF)&Msg;
-
-            twEvent.TWMessage = MSG_NULL;
-            TW_UINT16 twRC = TWRC_NOTDSEVENT;
-            twRC = _DSM_Entry(gpTwainApplicationCMD->getAppIdentity(),
-                              gpTwainApplicationCMD->getDataSource(),
-                              DG_CONTROL,
-                              DAT_EVENT,
-                              MSG_PROCESSEVENT,
-                              (TW_MEMREF)&twEvent);
-
-            if (!gUSE_CALLBACKS && twRC == TWRC_DSEVENT)
-            {
-                // check for message from Source
-                switch (twEvent.TWMessage)
-                {
-                case MSG_XFERREADY:
-                case MSG_CLOSEDSREQ:
-                case MSG_CLOSEDSOK:
-                case MSG_NULL:
-                    gpTwainApplicationCMD->m_DSMessage = twEvent.TWMessage;
-                    break;
-
-                default:
-                    cerr << "\nError - Unknown message in MSG_PROCESSEVENT loop\n"
-                         << endl;
-                    break;
-                }
-            }
-            if (twRC != TWRC_DSEVENT)
-            {
-                TranslateMessage((LPMSG)&Msg);
-                DispatchMessage((LPMSG)&Msg);
-            }
-        }
-#elif defined(TWNDS_OS_LINUX)
-        // Wait for the event be signaled
-        sem_wait(&(gpTwainApplicationCMD->m_TwainEvent)); // event semaphore handle
-                                                          // Indefinite wait
-#endif
-
-        // At this point the source has sent us a callback saying that it is ready to
-        // transfer the image.
-
-        if (gpTwainApplicationCMD->m_DSMessage == MSG_XFERREADY)
-        {
-            // move to state 6 as a result of the data source. We can start a scan now.
-            gpTwainApplicationCMD->m_DSMState = 6;
-
-            gpTwainApplicationCMD->startScan();
-        }
-
-        // Scan is done, disable the ds, thus moving us back to state 4 where we
-        // can negotiate caps again.
-        gpTwainApplicationCMD->disableDS();
-
-        return;
-    }
-
 //////////////////////////////////////////////////////////////////////////////
 /**
- * Callback funtion for DS.  This is a callback function that will be called by
- * the source when it is ready for the application to start a scan. This
- * callback needs to be registered with the DSM before it can be called.
- * It is important that the application returns right away after recieving this
- * message.  Set a flag and return.  Do not process the callback in this function.
- */
-#ifdef TWH_CMP_MSC
-    TW_UINT16 FAR PASCAL
-#else
-    FAR PASCAL TW_UINT16
-#endif
-    DSMCallback(pTW_IDENTITY _pOrigin,
-                pTW_IDENTITY _pDest,
-                TW_UINT32 _DG,
-                TW_UINT16 _DAT,
-                TW_UINT16 _MSG,
-                TW_MEMREF _pData)
+* Enables the source. The source will let us know when it is ready to scan by
+* calling our registered callback function.
+*/
+string EnableDS()
+{
+  string documentPath = "";
+  gpTwainApplicationCMD->m_DSMessage = 0;
+  #ifdef TWNDS_OS_LINUX
+
+    int test;
+    sem_getvalue(&(gpTwainApplicationCMD->m_TwainEvent), &test);
+    while(test<0)
     {
-        UNUSEDARG(_pDest);
-        UNUSEDARG(_DG);
-        UNUSEDARG(_DAT);
-        UNUSEDARG(_pData);
+      sem_post(&(gpTwainApplicationCMD->m_TwainEvent));    // Event semaphore Handle
+      sem_getvalue(&(gpTwainApplicationCMD->m_TwainEvent), &test);
+    }
+    while(test>0)
+    {
+      sem_wait(&(gpTwainApplicationCMD->m_TwainEvent)); // event semaphore handle
+      sem_getvalue(&(gpTwainApplicationCMD->m_TwainEvent), &test);
+    }
 
-        TW_UINT16 twrc = TWRC_SUCCESS;
+  #endif
+  // -Enable the data source. This puts us in state 5 which means that we
+  // have to wait for the data source to tell us to move to state 6 and
+  // start the transfer.  Once in state 5, no more set ops can be done on the
+  // caps, only get ops.
+  // -The scan will not start until the source calls the callback function
+  // that was registered earlier.
+#ifdef TWNDS_OS_WIN
+  if(!gpTwainApplicationCMD->enableDS(GetDesktopWindow(), FALSE))
+#else
+  if(!gpTwainApplicationCMD->enableDS(0, TRUE))
+#endif
+  {
+    return documentPath;
+  }
 
-        // we are only waiting for callbacks from our datasource, so validate
-        // that the originator.
-        if (0 == _pOrigin ||
-            _pOrigin->Id != gpTwainApplicationCMD->getDataSource()->Id)
-        {
-            return TWRC_FAILURE;
-        }
-        switch (_MSG)
-        {
+#ifdef TWNDS_OS_WIN
+  // now we have to wait until we hear something back from the DS.
+  while(!gpTwainApplicationCMD->m_DSMessage)
+  {
+    TW_EVENT twEvent = {0};
+
+    // If we are using callbacks, there is nothing to do here except sleep
+    // and wait for our callback from the DS.  If we are not using them, 
+    // then we have to poll the DSM.
+
+    // Pumping messages is for Windows only
+	  MSG Msg;
+	  if(!GetMessage((LPMSG)&Msg, NULL, 0, 0))
+    {
+      break;//WM_QUIT
+    }
+    twEvent.pEvent = (TW_MEMREF)&Msg;
+
+    twEvent.TWMessage = MSG_NULL;
+    TW_UINT16  twRC = TWRC_NOTDSEVENT;
+    twRC = _DSM_Entry( gpTwainApplicationCMD->getAppIdentity(),
+                gpTwainApplicationCMD->getDataSource(),
+                DG_CONTROL,
+                DAT_EVENT,
+                MSG_PROCESSEVENT,
+                (TW_MEMREF)&twEvent);
+
+    if(!gUSE_CALLBACKS && twRC==TWRC_DSEVENT)
+    {
+      // check for message from Source
+      switch (twEvent.TWMessage)
+      {
         case MSG_XFERREADY:
         case MSG_CLOSEDSREQ:
         case MSG_CLOSEDSOK:
         case MSG_NULL:
-            gpTwainApplicationCMD->m_DSMessage = _MSG;
-            // now signal the event semaphore
-#ifdef TWNDS_OS_LINUX
-            {
-                int test = 12345;
-                sem_post(&(gpTwainApplicationCMD->m_TwainEvent)); // Event semaphore Handle
-            }
-#endif
-            break;
+          gpTwainApplicationCMD->m_DSMessage = twEvent.TWMessage;
+          break;
 
         default:
-            cerr << "Error - Unknown message in callback routine" << endl;
-            twrc = TWRC_FAILURE;
-            break;
-        }
-
-        return twrc;
+          cerr << "\nError - Unknown message in MSG_PROCESSEVENT loop\n" << endl;
+          break;
+      }
     }
+    if(twRC!=TWRC_DSEVENT)
+    {   
+      TranslateMessage ((LPMSG)&Msg);
+      DispatchMessage ((LPMSG)&Msg);
+    }
+  }
+#elif defined(TWNDS_OS_LINUX)
+  // Wait for the event be signaled
+  sem_wait(&(gpTwainApplicationCMD->m_TwainEvent)); // event semaphore handle
+                            // Indefinite wait
+#endif
+
+  // At this point the source has sent us a callback saying that it is ready to
+  // transfer the image.
+
+  if(gpTwainApplicationCMD->m_DSMessage == MSG_XFERREADY)
+  {
+    // move to state 6 as a result of the data source. We can start a scan now.
+    gpTwainApplicationCMD->m_DSMState = 6;
+
+    documentPath = gpTwainApplicationCMD->startScan();
+  }
+
+  // Scan is done, disable the ds, thus moving us back to state 4 where we
+  // can negotiate caps again.
+  gpTwainApplicationCMD->disableDS();
+
+  return documentPath;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+/**
+* Callback funtion for DS.  This is a callback function that will be called by
+* the source when it is ready for the application to start a scan. This 
+* callback needs to be registered with the DSM before it can be called.
+* It is important that the application returns right away after recieving this
+* message.  Set a flag and return.  Do not process the callback in this function.
+*/
+#ifdef TWH_CMP_MSC
+TW_UINT16 FAR PASCAL
+#else
+FAR PASCAL TW_UINT16 
+#endif
+DSMCallback(pTW_IDENTITY _pOrigin,
+            pTW_IDENTITY _pDest,
+            TW_UINT32    _DG,
+            TW_UINT16    _DAT,
+            TW_UINT16    _MSG,
+            TW_MEMREF    _pData)
+{
+  UNUSEDARG(_pDest);
+  UNUSEDARG(_DG);
+  UNUSEDARG(_DAT);
+  UNUSEDARG(_pData);
+
+  TW_UINT16 twrc = TWRC_SUCCESS;
+
+  // we are only waiting for callbacks from our datasource, so validate
+  // that the originator.
+  if(0 == _pOrigin ||
+     _pOrigin->Id != gpTwainApplicationCMD->getDataSource()->Id)
+  {
+    return TWRC_FAILURE;
+  }
+  switch (_MSG)
+  {
+    case MSG_XFERREADY:
+    case MSG_CLOSEDSREQ:
+    case MSG_CLOSEDSOK:
+    case MSG_NULL:
+      gpTwainApplicationCMD->m_DSMessage = _MSG;
+      // now signal the event semaphore
+    #ifdef TWNDS_OS_LINUX
+      {
+      int test=12345;
+      sem_post(&(gpTwainApplicationCMD->m_TwainEvent));    // Event semaphore Handle
+  }
+    #endif
+      break;
+
+    default:
+      cerr << "Error - Unknown message in callback routine" << endl;
+      twrc = TWRC_FAILURE;
+      break;
+  }
+
+  return twrc;
+}
 
     EncodableList getDataSources() {
         EncodableList list;
@@ -674,6 +674,12 @@ public:
             list.push_back(EncodableValue(dsNames[i]));
         }
         return list;
+    }
+
+    EncodableValue scanDocument(TW_INT32 index) {
+        gpTwainApplicationCMD->loadDS(index);
+        string documentPath =  EnableDS();
+        return EncodableValue(documentPath);
     }
 
 private:

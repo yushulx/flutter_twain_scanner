@@ -31,4 +31,8 @@ abstract class FlutterTwainScannerPlatform extends PlatformInterface {
   Future<List<String>?> getDataSources() {
     throw UnimplementedError('init() has not been implemented.');
   }
+
+  Future<String?> scanDocument(int sourceIndex) {
+    throw UnimplementedError('init() has not been implemented.');
+  }
 }

@@ -28,4 +28,10 @@ class MethodChannelFlutterTwainScanner extends FlutterTwainScannerPlatform {
     }
     return dsNames;
   }
+
+  @override
+  Future<String?> scanDocument(int sourceIndex) async {
+    return await methodChannel
+        .invokeMethod<String>('scanDocument', {'index': sourceIndex});
+  }
 }

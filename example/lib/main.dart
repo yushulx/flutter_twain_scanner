@@ -113,7 +113,13 @@ class _MyAppState extends State<MyApp> {
                                 color: Colors.blue,
                                 onPressed: () async {
                                   if (_selectedScanner != null) {
-                                    print(_selectedScanner);
+                                    int index =
+                                        _scanners.indexOf(_selectedScanner!);
+                                    print(index);
+                                    String? documentPath =
+                                        await _flutterTwainScannerPlugin
+                                            .scanDocument(index);
+                                    print(documentPath);
                                     // Image.file(File('c:/test.bmp'));
                                   }
                                 },

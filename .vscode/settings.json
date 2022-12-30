@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "map": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "xlocale": "cpp",
+        "xlocinfo": "cpp",
+        "xstring": "cpp",
+        "list": "cpp"
     }
 }

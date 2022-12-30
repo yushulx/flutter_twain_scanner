@@ -8,4 +8,8 @@ class FlutterTwainScanner {
   Future<List<String>?> getDataSources() {
     return FlutterTwainScannerPlatform.instance.getDataSources();
   }
+
+  Future<String?> scanDocument(int sourceIndex) {
+    return FlutterTwainScannerPlatform.instance.scanDocument(sourceIndex);
+  }
 }

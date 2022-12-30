@@ -208,7 +208,7 @@ public:
 * Starts the scanning process using native mode.  Data will be transfered 
 * in native mode.
 */
-  void initiateTransfer_Native();
+  string initiateTransfer_Native();
 
 /**
 * Starts the scanning process using file mode.  Data will be transfered 
