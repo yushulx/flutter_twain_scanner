@@ -7,12 +7,7 @@
 
 #include <flutter/standard_method_codec.h>
 
-#include "main.h"
-#include <signal.h>
-
-#include "CommonTWAIN.h"
 #include "TwainAppCMD.h"
-#include "TwainApp_ui.h"
 
 using namespace std;
 
