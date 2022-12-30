@@ -1,6 +1,6 @@
 name: flutter_twain_scanner
-description: A new Flutter plugin project.
-version: 0.0.1
+description: A Flutter plugin for Windows desktop to scan documents from TWAIN compatible scanners. 
+version: 0.1.0
 homepage:
 
 environment:

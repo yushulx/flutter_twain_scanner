@@ -1,3 +1,3 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Flutter plugin for scanning documents from TWAIN compatible scanners on Windows desktop.

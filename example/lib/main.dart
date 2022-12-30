@@ -61,83 +61,82 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Flutter TWAIN Scanner'),
         ),
-        body: Stack(children: <Widget>[
-          Center(
-            child: GridView.count(
-              padding: const EdgeInsets.all(30.0),
-              crossAxisSpacing: 10.0,
-              mainAxisSpacing: 10.0,
-              crossAxisCount: 2,
-              children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    DropdownButton(
-                      hint: Text(
-                          'Select a scanner'), // Not necessary for Option 1
-                      value: _selectedScanner,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _selectedScanner = newValue;
-                        });
-                      },
-                      items: _scanners.map((location) {
-                        return DropdownMenuItem(
-                          child: new Text(location),
-                          value: location,
-                        );
-                      }).toList(),
-                    ),
-                    SizedBox(
-                      height: 100,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            MaterialButton(
-                                textColor: Colors.white,
-                                color: Colors.blue,
-                                onPressed: () async {
-                                  List<String>? scanners =
-                                      await _flutterTwainScannerPlugin
-                                          .getDataSources();
+        body: Stack(
+          children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 100,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        MaterialButton(
+                            textColor: Colors.white,
+                            color: Colors.blue,
+                            onPressed: () async {
+                              List<String>? scanners =
+                                  await _flutterTwainScannerPlugin
+                                      .getDataSources();
 
-                                  if (scanners != null) {
-                                    setState(() {
-                                      _scanners = scanners;
-                                    });
-                                  }
-                                },
-                                child: const Text('List Scanners')),
-                            MaterialButton(
-                                textColor: Colors.white,
-                                color: Colors.blue,
-                                onPressed: () async {
-                                  if (_selectedScanner != null) {
-                                    int index =
-                                        _scanners.indexOf(_selectedScanner!);
-                                    String? documentPath =
-                                        await _flutterTwainScannerPlugin
-                                            .scanDocument(index);
-                                    setState(() {
-                                      _documentPath = documentPath;
-                                    });
-                                  }
-                                },
-                                child: const Text('Scan Document')),
-                          ]),
-                    ),
-                  ],
+                              if (scanners != null) {
+                                setState(() {
+                                  _scanners = scanners;
+                                });
+                              }
+                            },
+                            child: const Text('List Scanners')),
+                        DropdownButton(
+                          hint: Text(
+                              'Select a scanner'), // Not necessary for Option 1
+                          value: _selectedScanner,
+                          onChanged: (newValue) {
+                            setState(() {
+                              _selectedScanner = newValue;
+                            });
+                          },
+                          items: _scanners.map((location) {
+                            return DropdownMenuItem(
+                              child: new Text(location),
+                              value: location,
+                            );
+                          }).toList(),
+                        ),
+                        MaterialButton(
+                            textColor: Colors.white,
+                            color: Colors.blue,
+                            onPressed: () async {
+                              if (_selectedScanner != null) {
+                                int index =
+                                    _scanners.indexOf(_selectedScanner!);
+                                String? documentPath =
+                                    await _flutterTwainScannerPlugin
+                                        .scanDocument(index);
+                                setState(() {
+                                  _documentPath = documentPath;
+                                });
+                              }
+                            },
+                            child: const Text('Scan Document')),
+                      ]),
                 ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: _documentPath == null
-                      ? Image.asset('images/default.png')
-                      : Image.file(File(_documentPath!), fit: BoxFit.fill),
-                )
+                SizedBox(
+                    height: 600,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: _documentPath == null
+                          ? Image.asset('images/default.png')
+                          : Image.file(
+                              File(_documentPath!),
+                              fit: BoxFit.contain,
+                              width: 600,
+                              height: 600,
+                            ),
+                    ))
               ],
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
