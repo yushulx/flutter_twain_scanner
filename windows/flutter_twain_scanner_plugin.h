@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "twain_manager.h"
+
 namespace flutter_twain_scanner {
 
 class FlutterTwainScannerPlugin : public flutter::Plugin {
@@ -21,6 +23,7 @@ class FlutterTwainScannerPlugin : public flutter::Plugin {
   FlutterTwainScannerPlugin& operator=(const FlutterTwainScannerPlugin&) = delete;
 
  private:
+    TwainManager *manager; 
   // Called when a method is called on this plugin's channel from Dart.
   void HandleMethodCall(
       const flutter::MethodCall<flutter::EncodableValue> &method_call,

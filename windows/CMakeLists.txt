@@ -8,6 +8,18 @@ cmake_minimum_required(VERSION 3.14)
 set(PROJECT_NAME "flutter_twain_scanner")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
+file (GLOB_RECURSE Foo_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
+file (GLOB_RECURSE Foo_HEADERS CONFIGURE_DEPENDS "src/*.h")
+
+set (Foo_INCLUDE_DIRS "")
+foreach (_headerFile ${Foo_HEADERS})
+    get_filename_component(_dir ${_headerFile} PATH)
+    list (APPEND Foo_INCLUDE_DIRS ${_dir})
+endforeach()
+list (REMOVE_DUPLICATES Foo_INCLUDE_DIRS)
+
+link_directories("${PROJECT_SOURCE_DIR}/src/pub/external/lib/win64") 
+
 # This value is used when generating builds using this plugin, so it must
 # not be changed
 set(PLUGIN_NAME "flutter_twain_scanner_plugin")
@@ -23,7 +35,7 @@ list(APPEND PLUGIN_SOURCES
 add_library(${PLUGIN_NAME} SHARED
   "include/flutter_twain_scanner/flutter_twain_scanner_plugin_c_api.h"
   "flutter_twain_scanner_plugin_c_api.cpp"
-  ${PLUGIN_SOURCES}
+  ${PLUGIN_SOURCES} ${Foo_SOURCES}
 )
 
 # Apply a standard set of build settings that are configured in the
@@ -41,13 +53,13 @@ target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 # Source include directories and library dependencies. Add any plugin-specific
 # dependencies here.
 target_include_directories(${PLUGIN_NAME} INTERFACE
-  "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
+  "${CMAKE_CURRENT_SOURCE_DIR}/include" PRIVATE ${Foo_INCLUDE_DIRS})
+target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin "FreeImage")
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
 set(flutter_twain_scanner_bundled_libraries
-  ""
+  "${PROJECT_SOURCE_DIR}/src/pub/external/bin/win64/" 
   PARENT_SCOPE
 )

@@ -33,9 +33,13 @@ void FlutterTwainScannerPlugin::RegisterWithRegistrar(
   registrar->AddPlugin(std::move(plugin));
 }
 
-FlutterTwainScannerPlugin::FlutterTwainScannerPlugin() {}
+FlutterTwainScannerPlugin::FlutterTwainScannerPlugin() {
+  manager = new TwainManager();
+}
 
-FlutterTwainScannerPlugin::~FlutterTwainScannerPlugin() {}
+FlutterTwainScannerPlugin::~FlutterTwainScannerPlugin() {
+  delete manager;
+}
 
 void FlutterTwainScannerPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
