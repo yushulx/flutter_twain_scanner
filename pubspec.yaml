@@ -1,7 +1,8 @@
 name: flutter_twain_scanner
 description: A Flutter plugin for Windows desktop to scan documents from TWAIN compatible scanners. 
 version: 0.1.0
-homepage:
+homepage: https://github.com/yushulx/flutter_twain_scanner
+repository: https://github.com/yushulx/flutter_twain_scanner
 
 environment:
   sdk: '>=2.18.5 <3.0.0'
