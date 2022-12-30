@@ -5,6 +5,8 @@
         "xlocale": "cpp",
         "xlocinfo": "cpp",
         "xstring": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "chrono": "cpp",
+        "variant": "cpp"
     }
 }
