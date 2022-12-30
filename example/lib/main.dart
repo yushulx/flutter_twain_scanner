@@ -115,12 +115,12 @@ class _MyAppState extends State<MyApp> {
                                   if (_selectedScanner != null) {
                                     int index =
                                         _scanners.indexOf(_selectedScanner!);
-                                    print(index);
                                     String? documentPath =
                                         await _flutterTwainScannerPlugin
                                             .scanDocument(index);
-                                    print(documentPath);
-                                    // Image.file(File('c:/test.bmp'));
+                                    setState(() {
+                                      _documentPath = documentPath;
+                                    });
                                   }
                                 },
                                 child: const Text('Scan Document')),

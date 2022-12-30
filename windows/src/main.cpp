@@ -261,8 +261,9 @@ void negotiateCaps()
 * Enables the source. The source will let us know when it is ready to scan by
 * calling our registered callback function.
 */
-void EnableDS()
+string EnableDS()
 {
+  string documentPath = "";
   gpTwainApplicationCMD->m_DSMessage = 0;
   #ifdef TWNDS_OS_LINUX
 
@@ -292,7 +293,7 @@ void EnableDS()
   if(!gpTwainApplicationCMD->enableDS(0, TRUE))
 #endif
   {
-    return;
+    return documentPath;
   }
 
 #ifdef TWNDS_OS_WIN
@@ -359,14 +360,14 @@ void EnableDS()
     // move to state 6 as a result of the data source. We can start a scan now.
     gpTwainApplicationCMD->m_DSMState = 6;
 
-    gpTwainApplicationCMD->startScan();
+    documentPath = gpTwainApplicationCMD->startScan();
   }
 
   // Scan is done, disable the ds, thus moving us back to state 4 where we
   // can negotiate caps again.
   gpTwainApplicationCMD->disableDS();
 
-  return;
+  return documentPath;
 }
 
 //////////////////////////////////////////////////////////////////////////////
