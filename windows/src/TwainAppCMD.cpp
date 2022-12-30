@@ -73,21 +73,23 @@ void TwainAppCMD::printIdentityStruct(const TW_UINT32 _identityID)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-void TwainAppCMD::printAvailableDataSources()
+vector<string> TwainAppCMD::printAvailableDataSources()
 {
+  vector<string> dsNames;
   if(m_DSMState < 3)
   {
     PrintCMDMessage("The DSM has not been opened yet, please open it first\n");
-    return;
+    return dsNames;
   }
 
   // print the Id and name of each available source
   for(unsigned int x = 0; x < m_DataSources.size(); ++x)
   {
     PrintCMDMessage("%d: %.33s by %.33s\n", m_DataSources[x].Id, m_DataSources[x].ProductName, m_DataSources[x].Manufacturer);
+    dsNames.push_back(m_DataSources[x].ProductName);
   }
 
-  return;
+  return dsNames;
 }
 
 //////////////////////////////////////////////////////////////////////////////

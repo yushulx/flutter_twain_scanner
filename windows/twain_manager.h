@@ -39,6 +39,8 @@ public:
         parentWindow = GetConsoleWindow();
 #endif
         gpTwainApplicationCMD = new TwainAppCMD(parentWindow);
+
+        gpTwainApplicationCMD->connectDSM();
     };
 
     // const char *GetVersion()
@@ -661,6 +663,17 @@ public:
         }
 
         return twrc;
+    }
+
+    EncodableList getDataSources() {
+        EncodableList list;
+
+        vector<string> dsNames = gpTwainApplicationCMD->printAvailableDataSources();
+
+        for (int i = 0; i < dsNames.size(); i++) {
+            list.push_back(EncodableValue(dsNames[i]));
+        }
+        return list;
     }
 
 private:

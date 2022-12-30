@@ -55,7 +55,14 @@ void FlutterTwainScannerPlugin::HandleMethodCall(
       version_stream << "7";
     }
     result->Success(flutter::EncodableValue(version_stream.str()));
-  } else {
+  } 
+  else if (method_call.method_name().compare("getDataSources") == 0)
+    {
+      std::string license;
+
+      result->Success(manager->getDataSources());
+    }
+  else {
     result->NotImplemented();
   }
 }

@@ -11,7 +11,21 @@ class MethodChannelFlutterTwainScanner extends FlutterTwainScannerPlatform {
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version =
+        await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
+  }
+
+  @override
+  Future<List<String>?> getDataSources() async {
+    List? results =
+        await methodChannel.invokeMethod<List<dynamic>>('getDataSources');
+    List<String> dsNames = [];
+    if (results != null) {
+      for (var item in results) {
+        dsNames.add(item.toString());
+      }
+    }
+    return dsNames;
   }
 }

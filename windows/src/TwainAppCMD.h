@@ -100,7 +100,7 @@ public:
 * Print a list of Data Sources.  Prints to stdout a quick list of the 
 * Data Sources the app knows about.
 */
-  void printAvailableDataSources();
+  vector<string> printAvailableDataSources();
 
 /**
 * Prints an identity structure that uniquely identifies an Application 

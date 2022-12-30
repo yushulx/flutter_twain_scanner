@@ -8,7 +8,8 @@ abstract class FlutterTwainScannerPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static FlutterTwainScannerPlatform _instance = MethodChannelFlutterTwainScanner();
+  static FlutterTwainScannerPlatform _instance =
+      MethodChannelFlutterTwainScanner();
 
   /// The default instance of [FlutterTwainScannerPlatform] to use.
   ///
@@ -25,5 +26,9 @@ abstract class FlutterTwainScannerPlatform extends PlatformInterface {
 
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
+  }
+
+  Future<List<String>?> getDataSources() {
+    throw UnimplementedError('init() has not been implemented.');
   }
 }

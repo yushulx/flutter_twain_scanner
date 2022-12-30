@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_twain_scanner/flutter_twain_scanner.dart';
+
+import 'dart:ui' as ui;
 
 void main() {
   runApp(const MyApp());
@@ -18,6 +22,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   final _flutterTwainScannerPlugin = FlutterTwainScanner();
+  String? _documentPath;
+  List<String> _scanners = []; // Option 2
+  String? _selectedScanner;
 
   @override
   void initState() {
@@ -31,8 +38,8 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      platformVersion =
-          await _flutterTwainScannerPlugin.getPlatformVersion() ?? 'Unknown platform version';
+      platformVersion = await _flutterTwainScannerPlugin.getPlatformVersion() ??
+          'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -52,11 +59,79 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Flutter TWAIN Scanner'),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
+        body: Stack(children: <Widget>[
+          Center(
+            child: GridView.count(
+              padding: const EdgeInsets.all(30.0),
+              crossAxisSpacing: 10.0,
+              mainAxisSpacing: 10.0,
+              crossAxisCount: 2,
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    DropdownButton(
+                      hint: Text(
+                          'Select a scanner'), // Not necessary for Option 1
+                      value: _selectedScanner,
+                      onChanged: (newValue) {
+                        setState(() {
+                          _selectedScanner = newValue;
+                        });
+                      },
+                      items: _scanners.map((location) {
+                        return DropdownMenuItem(
+                          child: new Text(location),
+                          value: location,
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(
+                      height: 100,
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            MaterialButton(
+                                textColor: Colors.white,
+                                color: Colors.blue,
+                                onPressed: () async {
+                                  List<String>? scanners =
+                                      await _flutterTwainScannerPlugin
+                                          .getDataSources();
+
+                                  if (scanners != null) {
+                                    setState(() {
+                                      _scanners = scanners;
+                                    });
+                                  }
+                                },
+                                child: const Text('List Scanners')),
+                            MaterialButton(
+                                textColor: Colors.white,
+                                color: Colors.blue,
+                                onPressed: () async {
+                                  if (_selectedScanner != null) {
+                                    print(_selectedScanner);
+                                    // Image.file(File('c:/test.bmp'));
+                                  }
+                                },
+                                child: const Text('Scan Document')),
+                          ]),
+                    ),
+                  ],
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: _documentPath == null
+                      ? Image.asset('images/default.png')
+                      : Image.file(File(_documentPath!), fit: BoxFit.fill),
+                )
+              ],
+            ),
+          ),
+        ]),
       ),
     );
   }
