@@ -61,9 +61,7 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Flutter TWAIN Scanner'),
         ),
-        body: Stack(
-          children: <Widget>[
-            Column(
+        body: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(
@@ -120,23 +118,18 @@ class _MyAppState extends State<MyApp> {
                             child: const Text('Scan Document')),
                       ]),
                 ),
-                SizedBox(
-                    height: 600,
-                    child: SingleChildScrollView(
+                Expanded(child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: _documentPath == null
                           ? Image.asset('images/default.png')
                           : Image.file(
                               File(_documentPath!),
-                              fit: BoxFit.contain,
                               width: 600,
-                              height: 600,
                             ),
                     ))
+                
               ],
             ),
-          ],
-        ),
       ),
     );
   }
