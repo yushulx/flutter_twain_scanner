@@ -1,7 +1,6 @@
 # flutter_twain_scanner
 
 A Flutter plugin for Windows desktop to scan documents from TWAIN compatible scanners. The C/C++ code is ported from [https://github.com/twain/twain-samples](https://github.com/twain/twain-samples).
-
 ![Flutter windows TWAIN scanner](https://www.dynamsoft.com/codepool/img/2023/01/flutter-windows-twain-scanner.gif)
 
 ## Usage
