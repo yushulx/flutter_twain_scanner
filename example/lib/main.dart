@@ -1,13 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:flutter_twain_scanner/flutter_twain_scanner.dart';
-
-import 'dart:ui' as ui;
-
 import 'package:flutter_twain_scanner/dynamsoft_service.dart';
 
 void main() {
@@ -28,7 +22,7 @@ class _MyAppState extends State<MyApp> {
   String host = 'http://127.0.0.1:18622';
   final DynamsoftService dynamsoftService = DynamsoftService();
   List<dynamic> devices = [];
-  List<String> imagePaths = [];
+  List<Uint8List> imagePaths = [];
 
   @override
   void initState() {
@@ -44,7 +38,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _scanDocument(int index) async {
     final Map<String, dynamic> parameters = {
       'license':
-          't0068MgAAAEm8KzOlKD/AG56RuTf2RSTo4ajLgVpDBfQkmIJYY7yrDj3jbzQpRfQRzGnACr7S1F/7Da6REO20jmF3QR4VDXI=',
+          'LICENSE-KEY',
       'device': devices[index]['device'],
     };
 
@@ -65,8 +59,8 @@ class _MyAppState extends State<MyApp> {
       if (jobId != '') {
         print('job id: $jobId');
 
-        List<String> paths =
-            await dynamsoftService.getImageFiles(host, jobId, './');
+        List<Uint8List> paths =
+            await dynamsoftService.getImageStreams(host, jobId);
 
         await dynamsoftService.deleteJob(host, jobId);
 
@@ -167,8 +161,8 @@ class _MyAppState extends State<MyApp> {
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(100.0),
-                            child: Image.file(
-                              File(imagePaths[index]),
+                            child: Image.memory(
+                              imagePaths[index],
                               fit: BoxFit.contain,
                             ), // Replace with Image.file() for local images
                           );

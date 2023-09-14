@@ -1,11 +1,13 @@
+// ignore_for_file: empty_catches
+
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 
 /// A service class for interacting with scanning devices and jobs.
 class DynamsoftService {
-  
   /// Fetches the list of available scanners from Dynamsoft Service.
   ///
   /// [host] - The host server URL.
@@ -19,12 +21,9 @@ class DynamsoftService {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200 && response.body.isNotEmpty) {
         devices = json.decode(response.body);
-        print('\nAvailable scanners: ${devices.length}');
         return devices;
       }
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
     return [];
   }
 
@@ -34,7 +33,8 @@ class DynamsoftService {
   /// [parameters] - The parameters for the scan job.
   ///
   /// Returns a `String` containing the job ID.
-  Future<String> scanDocument(String host, Map<String, dynamic> parameters) async {
+  Future<String> scanDocument(
+      String host, Map<String, dynamic> parameters) async {
     final url = '$host/DWTAPI/ScanJobs';
     try {
       final response = await http.post(
@@ -46,12 +46,8 @@ class DynamsoftService {
 
       if (response.statusCode == 201) {
         return jobId;
-      } else {
-        print(response.body);
       }
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
     return '';
   }
 
@@ -62,16 +58,11 @@ class DynamsoftService {
   Future<void> deleteJob(String host, String jobId) async {
     if (jobId.isEmpty) return;
     final url = '$host/DWTAPI/ScanJobs/$jobId';
-    print('Delete job: $url');
 
     try {
       final response = await http.delete(Uri.parse(url));
-      if (response.statusCode == 200) {
-        print('Deleted: ${response.body}');
-      }
-    } catch (error) {
-      print('Error: $error');
-    }
+      if (response.statusCode == 200) {}
+    } catch (error) {}
   }
 
   /// Downloads and saves images from a scan job to a directory.
@@ -81,10 +72,10 @@ class DynamsoftService {
   /// [directory] - The directory where images will be saved.
   ///
   /// Returns a `List<String>` containing the paths of saved images.
-  Future<List<String>> getImageFiles(String host, String jobId, String directory) async {
+  Future<List<String>> getImageFiles(
+      String host, String jobId, String directory) async {
     final List<String> images = [];
     final url = '$host/DWTAPI/ScanJobs/$jobId/NextDocument';
-    print('Start downloading images......');
     while (true) {
       try {
         final response = await http.get(Uri.parse(url));
@@ -96,11 +87,9 @@ class DynamsoftService {
           await file.writeAsBytes(response.bodyBytes);
           images.add(imagePath);
         } else if (response.statusCode == 410) {
-          print('No more images.');
           break;
         }
       } catch (error) {
-        print('No more images.');
         break;
       }
     }
@@ -113,11 +102,10 @@ class DynamsoftService {
   /// [host] - The host server URL.
   /// [jobId] - The ID of the scan job.
   ///
-  /// Returns a `List<List<int>>` containing the byte streams of the images.
-  Future<List<List<int>>> getImageStreams(String host, String jobId) async {
-    final List<List<int>> streams = [];
+  /// Returns a `List<Uint8List>` containing the byte streams of the images.
+  Future<List<Uint8List>> getImageStreams(String host, String jobId) async {
+    final List<Uint8List> streams = [];
     final url = '$host/DWTAPI/ScanJobs/$jobId/NextDocument';
-    print('Start downloading images......');
 
     while (true) {
       try {
@@ -125,11 +113,9 @@ class DynamsoftService {
         if (response.statusCode == 200) {
           streams.add(response.bodyBytes);
         } else if (response.statusCode == 410) {
-          print('No more images.');
           break;
         }
       } catch (error) {
-        print('No more images.');
         break;
       }
     }
