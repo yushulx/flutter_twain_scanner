@@ -1,16 +1,4 @@
-# flutter_twain_scanner_example
 
-Demonstrates how to use the flutter_twain_scanner plugin.
 
-## Getting Started
+https://github.com/yushulx/flutter_twain_scanner/assets/2202306/0e8072c4-c324-48a3-9ade-6543492f849e
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
