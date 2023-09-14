@@ -39,7 +39,7 @@ abstract class FlutterTwainScannerPlatform extends PlatformInterface {
   ///
   /// [sourceIndex] - The index of the scanner in the list of available data sources.
   ///
-  /// Returns a `Future<List<String>>` containing the paths of saved images. 
+  /// Returns a `Future<List<String>>` containing the paths of saved images.
   Future<List<String>> scanDocument(int sourceIndex) {
     throw UnimplementedError('init() has not been implemented.');
   }

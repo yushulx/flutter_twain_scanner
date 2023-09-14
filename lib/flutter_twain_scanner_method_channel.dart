@@ -33,7 +33,7 @@ class MethodChannelFlutterTwainScanner extends FlutterTwainScannerPlatform {
   Future<List<String>> scanDocument(int sourceIndex) async {
     List? results = await methodChannel
         .invokeMethod<List<dynamic>>('scanDocument', {'index': sourceIndex});
-    
+
     List<String> fileNames = [];
     if (results != null) {
       for (var item in results) {
