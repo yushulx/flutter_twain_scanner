@@ -17,7 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _flutterTwainScannerPlugin = FlutterTwainScanner();
-  List<String> _scanners = []; // Option 2
+  List<String> scannerNames = []; 
   String? _selectedScanner;
   String host = 'http://127.0.0.1:18622';
   final DynamsoftService dynamsoftService = DynamsoftService();
@@ -57,8 +57,6 @@ class _MyAppState extends State<MyApp> {
           await dynamsoftService.scanDocument(host, parameters);
 
       if (jobId != '') {
-        print('job id: $jobId');
-
         List<Uint8List> paths =
             await dynamsoftService.getImageStreams(host, jobId);
 
@@ -91,21 +89,20 @@ class _MyAppState extends State<MyApp> {
                   final scanners = await dynamsoftService.getDevices(host);
                   for (var i = 0; i < scanners.length; i++) {
                     devices.add(scanners[i]);
-                    _scanners.add(scanners[i]['name']);
-                    print('\nIndex: $i, Name: ${scanners[i]['name']}');
+                    scannerNames.add(scanners[i]['name']);
                   }
                 } catch (error) {
                   print('An error occurred: $error');
                 }
                 // if (scanners != null) {
                 //   setState(() {
-                //     // _scanners = scanners;
+                //     // scannerNames = scanners;
                 //     _selectedScanner = scanners[0];
                 //   });
                 // }
                 if (devices.isNotEmpty) {
                   setState(() {
-                    // _scanners = scanners;
+                    // scannerNames = scanners;
                     _selectedScanner = devices[0]['name'];
                   });
                 }
@@ -119,7 +116,7 @@ class _MyAppState extends State<MyApp> {
                 _selectedScanner = newValue;
               });
             },
-            items: _scanners.map((location) {
+            items: scannerNames.map((location) {
               return DropdownMenuItem(
                 value: location,
                 child: Text(location),
@@ -131,7 +128,7 @@ class _MyAppState extends State<MyApp> {
               color: Colors.blue,
               onPressed: () async {
                 if (_selectedScanner != null) {
-                  int index = _scanners.indexOf(_selectedScanner!);
+                  int index = scannerNames.indexOf(_selectedScanner!);
                   // imagePaths =
                   //     await _flutterTwainScannerPlugin.scanDocument(index);
                   // setState(() {});

@@ -65,7 +65,7 @@ class DynamsoftService {
     } catch (error) {}
   }
 
-  /// Downloads and saves images from a scan job to a directory.
+  /// Saves images from a scan job to a directory.
   ///
   /// [host] - The host server URL.
   /// [jobId] - The ID of the scan job.
@@ -97,7 +97,7 @@ class DynamsoftService {
     return images;
   }
 
-  /// Downloads images as byte streams from a scan job.
+  /// Retrieves images as byte streams from a scan job.
   ///
   /// [host] - The host server URL.
   /// [jobId] - The ID of the scan job.
