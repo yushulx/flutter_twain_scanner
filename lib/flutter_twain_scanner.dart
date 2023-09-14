@@ -5,11 +5,11 @@ class FlutterTwainScanner {
     return FlutterTwainScannerPlatform.instance.getPlatformVersion();
   }
 
-  Future<List<String>?> getDataSources() {
+  Future<List<String>> getDataSources() {
     return FlutterTwainScannerPlatform.instance.getDataSources();
   }
 
-  Future<String?> scanDocument(int sourceIndex) {
+  Future<List<String>> scanDocument(int sourceIndex) {
     return FlutterTwainScannerPlatform.instance.scanDocument(sourceIndex);
   }
 }

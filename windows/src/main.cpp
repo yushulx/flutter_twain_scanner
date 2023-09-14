@@ -261,9 +261,9 @@ void negotiateCaps()
 * Enables the source. The source will let us know when it is ready to scan by
 * calling our registered callback function.
 */
-string EnableDS()
+vector<string> EnableDS()
 {
-  string documentPath = "";
+  vector<string> documentPaths;
   gpTwainApplicationCMD->m_DSMessage = 0;
   #ifdef TWNDS_OS_LINUX
 
@@ -293,7 +293,7 @@ string EnableDS()
   if(!gpTwainApplicationCMD->enableDS(0, TRUE))
 #endif
   {
-    return documentPath;
+    return documentPaths;
   }
 
 #ifdef TWNDS_OS_WIN
@@ -354,20 +354,19 @@ string EnableDS()
 
   // At this point the source has sent us a callback saying that it is ready to
   // transfer the image.
-
   if(gpTwainApplicationCMD->m_DSMessage == MSG_XFERREADY)
   {
     // move to state 6 as a result of the data source. We can start a scan now.
     gpTwainApplicationCMD->m_DSMState = 6;
 
-    documentPath = gpTwainApplicationCMD->startScan();
+    documentPaths = gpTwainApplicationCMD->startScan();
   }
 
   // Scan is done, disable the ds, thus moving us back to state 4 where we
   // can negotiate caps again.
   gpTwainApplicationCMD->disableDS();
 
-  return documentPath;
+  return documentPaths;
 }
 
 //////////////////////////////////////////////////////////////////////////////

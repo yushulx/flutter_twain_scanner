@@ -77,7 +77,7 @@ namespace flutter_twain_scanner
     else if (method_call.method_name().compare("scanDocument") == 0)
     {
       int index = -1;
-      EncodableValue value;
+      EncodableList value;
 
       if (arguments)
       {

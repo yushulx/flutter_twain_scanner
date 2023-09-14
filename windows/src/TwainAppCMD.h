@@ -129,7 +129,7 @@ public:
 * Tries to starts the scanning process.  Must be in state 6 to start.  
 * If successfully finishes scan moves app to state 5.
 */
-  string startScan();
+  vector<string> startScan();
 
 /**
 * Sets the CAP_XFERCOUNT capability

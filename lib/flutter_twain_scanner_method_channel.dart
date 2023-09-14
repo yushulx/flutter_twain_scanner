@@ -17,7 +17,7 @@ class MethodChannelFlutterTwainScanner extends FlutterTwainScannerPlatform {
   }
 
   @override
-  Future<List<String>?> getDataSources() async {
+  Future<List<String>> getDataSources() async {
     List? results =
         await methodChannel.invokeMethod<List<dynamic>>('getDataSources');
     List<String> dsNames = [];
@@ -30,8 +30,16 @@ class MethodChannelFlutterTwainScanner extends FlutterTwainScannerPlatform {
   }
 
   @override
-  Future<String?> scanDocument(int sourceIndex) async {
-    return await methodChannel
-        .invokeMethod<String>('scanDocument', {'index': sourceIndex});
+  Future<List<String>> scanDocument(int sourceIndex) async {
+    List? results = await methodChannel
+        .invokeMethod<List<dynamic>>('scanDocument', {'index': sourceIndex});
+    
+    List<String> fileNames = [];
+    if (results != null) {
+      for (var item in results) {
+        fileNames.add(item.toString());
+      }
+    }
+    return fileNames;
   }
 }

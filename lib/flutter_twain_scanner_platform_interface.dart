@@ -28,13 +28,19 @@ abstract class FlutterTwainScannerPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
-  /// Get the list of available scanners.
-  Future<List<String>?> getDataSources() {
+  /// Fetches the list of available scanners from a data source.
+  ///
+  /// Returns a `Future<List<String>>` containing the names of available scanners.
+  Future<List<String>> getDataSources() {
     throw UnimplementedError('init() has not been implemented.');
   }
 
-  /// Scan documents from a selected scanner.
-  Future<String?> scanDocument(int sourceIndex) {
+  /// Initiates a document scanning operation from a specified scanner.
+  ///
+  /// [sourceIndex] - The index of the scanner in the list of available data sources.
+  ///
+  /// Returns a `Future<List<String>>` containing the paths of saved images. 
+  Future<List<String>> scanDocument(int sourceIndex) {
     throw UnimplementedError('init() has not been implemented.');
   }
 }

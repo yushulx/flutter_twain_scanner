@@ -16,7 +16,7 @@ using flutter::EncodableMap;
 using flutter::EncodableValue;
 
 extern TwainAppCMD  *gpTwainApplicationCMD;
-extern string EnableDS();
+extern vector<string> EnableDS();
 
 class TwainManager
 {
@@ -52,10 +52,14 @@ public:
         return list;
     }
 
-    EncodableValue scanDocument(TW_INT32 index) {
+    EncodableList scanDocument(TW_INT32 index) {
         gpTwainApplicationCMD->loadDS(index);
-        string documentPath =  EnableDS();
-        return EncodableValue(documentPath);
+        vector<string> documentPaths =  EnableDS();
+        EncodableList list;
+        for (int i = 0; i < documentPaths.size(); i++) {
+            list.push_back(EncodableValue(documentPaths[i]));
+        }
+        return list;
     }
 };
 

@@ -801,9 +801,9 @@ bool TwainApp::updateIMAGEINFO()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-string TwainApp::initiateTransfer_Native()
+vector<string> TwainApp::initiateTransfer_Native()
 {
-  string documentPath = "";
+  vector<string> documentPaths;
   PrintCMDMessage("app: Starting a TWSX_NATIVE transfer...\n");
 
   TW_STR255   szOutFileName;
@@ -906,7 +906,7 @@ string TwainApp::initiateTransfer_Native()
         pFile = 0;
 
         PrintCMDMessage("app: File \"%s\" saved...\n", szOutFileName);
-        documentPath = szOutFileName;
+        documentPaths.push_back(szOutFileName);
       }
 
       _DSM_UnlockMemory(hImg);
@@ -963,7 +963,7 @@ string TwainApp::initiateTransfer_Native()
 
   PrintCMDMessage("app: DONE!\n");
 
-  return documentPath;
+  return documentPaths;
 }
 
 TW_UINT16 TwainApp::DoAbortXfer()

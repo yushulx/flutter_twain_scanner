@@ -235,26 +235,28 @@ void TwainAppCMD::uninitCaps()
   return;
 }
 //////////////////////////////////////////////////////////////////////////////
-string TwainAppCMD::startScan()
+vector<string> TwainAppCMD::startScan()
 {
-  string documentPath = "";
+  vector<string> documentPaths;
   if(m_DSMState != 6)
   {
     printError(m_pDataSource, "A scan cannot be initiated unless we are in state 6");
-    return documentPath;
+
+    return documentPaths;
   }
 
   TW_UINT16 mech;
   if(!getICAP_XFERMECH(mech))
   {
     printError(m_pDataSource, "Error: could not get the transfer mechanism");
-    return documentPath;
+
+    return documentPaths;
   }
 
   switch (mech)
   {
   case TWSX_NATIVE:
-    documentPath = initiateTransfer_Native();
+    documentPaths = initiateTransfer_Native();
     break;
 
   case TWSX_FILE:
@@ -274,7 +276,7 @@ string TwainAppCMD::startScan()
     break;
   }
 
-  return documentPath;
+  return documentPaths;
 }
 
 //////////////////////////////////////////////////////////////////////////////
