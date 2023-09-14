@@ -1,3 +1,6 @@
+## 0.2.1
+* Added scanner type filter.
+
 ## 0.2.0
 * Added support for utilizing the Dynamsoft Service REST API, which allows seamless scanning functionality with both 32-bit and 64-bit TWAIN drivers on Windows desktops. Additionally, the API also offers compatibility with WIA-enabled scanners.
 

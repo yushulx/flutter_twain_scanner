@@ -1,6 +1,6 @@
 name: flutter_twain_scanner
 description: A Flutter plugin that enables you to develop Windows desktop applications for digitizing documents using TWAIN, WIA, and eSCL scanners. 
-version: 0.2.0
+version: 0.2.1
 homepage: https://github.com/yushulx/flutter_twain_scanner
 repository: https://github.com/yushulx/flutter_twain_scanner
 

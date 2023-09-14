@@ -34,10 +34,10 @@ To make Dynamsoft Service work:
     ```
 
 ### Dynamsoft Service 
-- `Future<List<dynamic>> getDevices(String host)`: Get the list of TWAIN, WIA, and eSCL compatible scanners.
+- `Future<List<dynamic>> getDevices(String host, [int? scannerType])`: Get the list of TWAIN, WIA, and eSCL compatible scanners.
     ```dart
     String host = 'http://127.0.0.1:18622';
-    final scanners = await dynamsoftService.getDevices(host);
+    final scanners = await dynamsoftService.getDevices(host, ScannerType.TWAINSCANNER | ScannerType.TWAINX64SCANNER);
     ```
 - `Future<void> deleteJob(String host, String jobId)`: Deletes a scan job based on the provided job ID.
     ```dart

@@ -86,7 +86,7 @@ class _MyAppState extends State<MyApp> {
                 //     await _flutterTwainScannerPlugin.getDataSources();
 
                 try {
-                  final scanners = await dynamsoftService.getDevices(host);
+                  final scanners = await dynamsoftService.getDevices(host, ScannerType.TWAINSCANNER | ScannerType.TWAINX64SCANNER);
                   for (var i = 0; i < scanners.length; i++) {
                     devices.add(scanners[i]);
                     scannerNames.add(scanners[i]['name']);

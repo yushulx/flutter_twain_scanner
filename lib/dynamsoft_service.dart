@@ -6,6 +6,21 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 
+/// Class representing different types of scanners and their corresponding codes.
+///
+/// This class contains static constants to identify various scanner types like TWAIN, WIA, etc.
+/// Each constant holds an integer value that is associated with a specific scanner type.
+class ScannerType {
+  static const int TWAINSCANNER = 0x10;
+  static const int WIASCANNER = 0x20;
+  static const int TWAINX64SCANNER = 0x40;
+  static const int ICASCANNER = 0x80;
+  static const int SANESCANNER = 0x100;
+  static const int ESCLSCANNER = 0x200;
+  static const int WIFIDIRECTSCANNER = 0x400;
+  static const int WIATWAINSCANNER = 0x800;
+}
+
 /// A service class for interacting with scanning devices and jobs.
 class DynamsoftService {
   /// Fetches the list of available scanners from Dynamsoft Service.
@@ -13,9 +28,12 @@ class DynamsoftService {
   /// [host] - The host server URL.
   ///
   /// Returns a `List<dynamic>` containing information about available scanners.
-  Future<List<dynamic>> getDevices(String host) async {
+  Future<List<dynamic>> getDevices(String host, [int? scannerType]) async {
     List<dynamic> devices = [];
-    final url = '$host/DWTAPI/Scanners';
+    String url = '$host/DWTAPI/Scanners';
+    if (scannerType != null) {
+      url += '?type=$scannerType';
+    }
 
     try {
       final response = await http.get(Uri.parse(url));
