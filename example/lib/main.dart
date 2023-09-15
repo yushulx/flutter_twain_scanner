@@ -17,9 +17,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _flutterTwainScannerPlugin = FlutterTwainScanner();
-  List<String> scannerNames = []; 
+  List<String> scannerNames = [];
   String? _selectedScanner;
-  String host = 'http://127.0.0.1:18622';
+  String host = 'http://127.0.0.1:18622'; // Visit http://127.0.0.1:18625/ to change IP for mobile apps. E.g. http://192.168.8.72:18622. 
   final DynamsoftService dynamsoftService = DynamsoftService();
   List<dynamic> devices = [];
   List<Uint8List> imagePaths = [];
@@ -86,7 +86,8 @@ class _MyAppState extends State<MyApp> {
                 //     await _flutterTwainScannerPlugin.getDataSources();
 
                 try {
-                  final scanners = await dynamsoftService.getDevices(host, ScannerType.TWAINSCANNER | ScannerType.TWAINX64SCANNER);
+                  final scanners = await dynamsoftService.getDevices(host,
+                      ScannerType.TWAINSCANNER | ScannerType.TWAINX64SCANNER);
                   for (var i = 0; i < scanners.length; i++) {
                     devices.add(scanners[i]);
                     scannerNames.add(scanners[i]['name']);
@@ -108,21 +109,6 @@ class _MyAppState extends State<MyApp> {
                 }
               },
               child: const Text('List Scanners')),
-          DropdownButton(
-            hint: const Text('Select a scanner'), // Not necessary for Option 1
-            value: _selectedScanner,
-            onChanged: (newValue) {
-              setState(() {
-                _selectedScanner = newValue;
-              });
-            },
-            items: scannerNames.map((location) {
-              return DropdownMenuItem(
-                value: location,
-                child: Text(location),
-              );
-            }).toList(),
-          ),
           MaterialButton(
               textColor: Colors.white,
               color: Colors.blue,
@@ -150,6 +136,22 @@ class _MyAppState extends State<MyApp> {
               height: 100,
               child: row,
             ),
+            DropdownButton(
+              hint:
+                  const Text('Select a scanner'), // Not necessary for Option 1
+              value: _selectedScanner,
+              onChanged: (newValue) {
+                setState(() {
+                  _selectedScanner = newValue;
+                });
+              },
+              items: scannerNames.map((location) {
+                return DropdownMenuItem(
+                  value: location,
+                  child: Text(location),
+                );
+              }).toList(),
+            ),
             Expanded(
                 child: imagePaths.isEmpty
                     ? Image.asset('images/default.png')
@@ -157,7 +159,7 @@ class _MyAppState extends State<MyApp> {
                         itemCount: imagePaths.length,
                         itemBuilder: (context, index) {
                           return Padding(
-                            padding: const EdgeInsets.all(100.0),
+                            padding: const EdgeInsets.all(10.0),
                             child: Image.memory(
                               imagePaths[index],
                               fit: BoxFit.contain,
