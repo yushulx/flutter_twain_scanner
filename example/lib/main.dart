@@ -19,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   final _flutterTwainScannerPlugin = FlutterTwainScanner();
   List<String> scannerNames = [];
   String? _selectedScanner;
-  String host = 'http://127.0.0.1:18622'; // Visit http://127.0.0.1:18625/ to change IP for mobile apps. E.g. http://192.168.8.72:18622. 
+  String host = 'http://192.168.8.72:18622'; // Visit http://127.0.0.1:18625/ and replace 127.0.0.1 with your LAN IP address.
   final DynamsoftService dynamsoftService = DynamsoftService();
   List<dynamic> devices = [];
   List<Uint8List> imagePaths = [];
