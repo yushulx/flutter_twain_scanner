@@ -1,3 +1,6 @@
+## 1.0.0
+* Updated Dynamsoft Service installer for Windows, macOS and Linux.
+
 ## 0.2.1
 * Added scanner type filter.
 

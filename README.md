@@ -2,7 +2,7 @@
 
 ![Flutter TWAIN Dynamsoft Service](https://www.dynamsoft.com/codepool/img/2023/09/flutter-twain-dynamsoft-service.gif)
 
-A Flutter plugin that enables you to develop Windows desktop applications for digitizing documents using TWAIN, WIA, and eSCL scanners. The plugin offers callable methods for both [open-source TWAIN](https://github.com/twain/twain-samples) (**64-bit only**) and the **Dynamsoft Service REST API**, supporting **32-bit and 64-bit TWAIN, WIA, and eSCL** scanners.
+A Flutter plugin that enables you to develop Windows desktop applications for digitizing documents using **TWAIN (32-bit/64-bit)**, **WIA**, **SANE**, **ICA** and **eSCL** scanners. The plugin offers callable methods for both [open-source TWAIN](https://github.com/twain/twain-samples) (**64-bit only**) and the **Dynamsoft Service REST API**.
 
 ## Dynamsoft Service REST API
 By default, the REST API's host address is set to `http://127.0.0.1:18622`.
@@ -16,13 +16,27 @@ By default, the REST API's host address is set to `http://127.0.0.1:18622`.
 
 
 To make Dynamsoft Service work:
-1. Install [Dynamsoft Service REST Preview for Windows](https://www.dynamsoft.com/codepool/downloads/DynamsoftServiceSetup.msi).
+1. Install Dynamsoft Service.
+    - Windows: [Dynamsoft-Service-Setup.msi](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.msi)
+    - macOS: [Dynamsoft-Service-Setup.pkg](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.pkg)
+    - Linux: 
+        - [Dynamsoft-Service-Setup.deb](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.deb)
+        - [Dynamsoft-Service-Setup-arm64.deb](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup-arm64.deb)
+        - [Dynamsoft-Service-Setup-mips64el.deb](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup-mips64el.deb)
+        - [Dynamsoft-Service-Setup.rpm](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.rpm)
+        
 2. Request a [free trial license](https://www.dynamsoft.com/customer/license/trialLicense?product=dwt).
+
+
+## Dynamsoft Service Configuration
+After installing the Dynamsoft Service, navigate to `http://127.0.0.1:18625/` in a web browser to configure the host and port settings. The default host IP address is set to 127.0.0.1. If you wish to make the service accessible from desktop, mobile, and web applications in your office,  you can update the host setting to a LAN IP address, such as **192.168.8.72**.
+
+![dynamsoft-service-config](https://github.com/yushulx/dynamsoft-service-REST-API/assets/2202306/e2b1292e-dfbd-4821-bf41-70e2847dd51e)
 
 
 ## API Usage
 
-### Open Source TWAIN 
+### Open Source TWAIN (Windows 64-bit only)
 - `Future<List<String>> getDataSources()`: Get the list of TWAIN compatible scanners.
     ```dart
     List<String> scanners = await _flutterTwainScannerPlugin.getDataSources();
@@ -33,9 +47,10 @@ To make Dynamsoft Service work:
     List<String> documentPaths = await _flutterTwainScannerPlugin.scanDocument(index);
     ```
 
-### Dynamsoft Service 
+### Dynamsoft Service (Windows, macOS, Linux, Android, iOS and Web)
 - `Future<List<dynamic>> getDevices(String host, [int? scannerType])`: Get the list of TWAIN, WIA, and eSCL compatible scanners.
     ```dart
+    final DynamsoftService dynamsoftService = DynamsoftService();
     String host = 'http://127.0.0.1:18622';
     final scanners = await dynamsoftService.getDevices(host, ScannerType.TWAINSCANNER | ScannerType.TWAINX64SCANNER);
     ```
@@ -74,4 +89,4 @@ To make Dynamsoft Service work:
     ```
 
 
-    The parameter configuration is based on [Dynamsoft Web TWAIN documentation](https://www.dynamsoft.com/web-twain/docs/info/api/Interfaces.html#DeviceConfiguration). It controls the behavior of the scanner. 
+    The scanner parameter configuration is based on [Dynamsoft Web TWAIN documentation](https://www.dynamsoft.com/web-twain/docs/info/api/Interfaces.html#DeviceConfiguration). 
