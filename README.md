@@ -2,7 +2,7 @@
 
 ![Flutter TWAIN Dynamsoft Service](https://www.dynamsoft.com/codepool/img/2023/09/flutter-twain-dynamsoft-service.gif)
 
-A Flutter plugin that enables you to develop cross-platform applications for digitizing documents using **TWAIN (32-bit/64-bit)**, **WIA**, **SANE**, **ICA** and **eSCL** scanners. The plugin offers callable methods for both [open-source TWAIN](https://github.com/twain/twain-samples) (**64-bit only**) and the **Dynamsoft Service REST API**.
+A Flutter plugin that enables you to develop cross-platform applications for digitizing documents from **TWAIN (32-bit/64-bit)**, **WIA**, **SANE**, **ICA** and **eSCL** scanners. The plugin offers callable methods for both [open-source TWAIN](https://github.com/twain/twain-samples) (**64-bit only**) and the **Dynamsoft Service REST API**.
 
 ## Dynamsoft Service REST API
 By default, the REST API's host address is set to `http://127.0.0.1:18622`.
