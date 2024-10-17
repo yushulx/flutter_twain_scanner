@@ -1,3 +1,6 @@
+## 1.0.1
+* Support AGP 8 for Android.
+
 ## 1.0.0
 * Updated Dynamsoft Service installer for Windows, macOS and Linux.
 
