@@ -19,9 +19,10 @@ class _MyAppState extends State<MyApp> {
   final _flutterTwainScannerPlugin = FlutterTwainScanner();
   List<String> scannerNames = [];
   String? _selectedScanner;
-  String host = 'http://192.168.8.72:18622'; // Visit http://127.0.0.1:18625/ and replace 127.0.0.1 with your LAN IP address.
+  String host =
+      'http://192.168.8.72:18622'; // Visit http://127.0.0.1:18625/ and replace 127.0.0.1 with your LAN IP address to make the service accessible from other devices.
   final DynamsoftService dynamsoftService = DynamsoftService();
-  List<dynamic> devices = [];
+  List<Map<String, dynamic>> devices = [];
   List<Uint8List> imagePaths = [];
 
   @override
@@ -38,7 +39,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _scanDocument(int index) async {
     final Map<String, dynamic> parameters = {
       'license':
-          'LICENSE-KEY',
+          'DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==',
       'device': devices[index]['device'],
     };
 
@@ -55,12 +56,9 @@ class _MyAppState extends State<MyApp> {
     try {
       final String jobId =
           await dynamsoftService.scanDocument(host, parameters);
-
       if (jobId != '') {
         List<Uint8List> paths =
             await dynamsoftService.getImageStreams(host, jobId);
-
-        await dynamsoftService.deleteJob(host, jobId);
 
         if (paths.isNotEmpty) {
           setState(() {
@@ -75,6 +73,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     Row row = Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -86,10 +85,16 @@ class _MyAppState extends State<MyApp> {
                 //     await _flutterTwainScannerPlugin.getDataSources();
 
                 try {
+                  devices.clear();
+                  scannerNames.clear();
                   final scanners = await dynamsoftService.getDevices(host,
                       ScannerType.TWAINSCANNER | ScannerType.TWAINX64SCANNER);
                   for (var i = 0; i < scanners.length; i++) {
-                    devices.add(scanners[i]);
+                    devices.add({
+                      'id': '${scanners[i]['device']}_$i',
+                      'name': scanners[i]['name'],
+                      'device': scanners[i]['device'],
+                    });
                     scannerNames.add(scanners[i]['name']);
                   }
                 } catch (error) {
@@ -103,8 +108,7 @@ class _MyAppState extends State<MyApp> {
                 // }
                 if (devices.isNotEmpty) {
                   setState(() {
-                    // scannerNames = scanners;
-                    _selectedScanner = devices[0]['name'];
+                    _selectedScanner = devices[0]['id'];
                   });
                 }
               },
@@ -114,10 +118,8 @@ class _MyAppState extends State<MyApp> {
               color: Colors.blue,
               onPressed: () async {
                 if (_selectedScanner != null) {
-                  int index = scannerNames.indexOf(_selectedScanner!);
-                  // imagePaths =
-                  //     await _flutterTwainScannerPlugin.scanDocument(index);
-                  // setState(() {});
+                  int index = devices
+                      .indexWhere((device) => device['id'] == _selectedScanner);
                   await _scanDocument(index);
                 }
               },
@@ -137,18 +139,17 @@ class _MyAppState extends State<MyApp> {
               child: row,
             ),
             DropdownButton(
-              hint:
-                  const Text('Select a scanner'), // Not necessary for Option 1
+              hint: const Text('Select a scanner'),
               value: _selectedScanner,
               onChanged: (newValue) {
                 setState(() {
-                  _selectedScanner = newValue;
+                  _selectedScanner = newValue as String?;
                 });
               },
-              items: scannerNames.map((location) {
+              items: devices.map((device) {
                 return DropdownMenuItem(
-                  value: location,
-                  child: Text(location),
+                  value: device['id'],
+                  child: Text(device['name']),
                 );
               }).toList(),
             ),
@@ -160,10 +161,13 @@ class _MyAppState extends State<MyApp> {
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: Image.memory(
-                              imagePaths[index],
-                              fit: BoxFit.contain,
-                            ), // Replace with Image.file() for local images
+                            child: SizedBox(
+                              height: screenHeight * 0.5,
+                              child: Image.memory(
+                                imagePaths[index],
+                                fit: BoxFit.contain,
+                              ),
+                            ),
                           );
                         },
                       ))

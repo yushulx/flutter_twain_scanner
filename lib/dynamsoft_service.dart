@@ -130,7 +130,7 @@ class DynamsoftService {
         final response = await http.get(Uri.parse(url));
         if (response.statusCode == 200) {
           streams.add(response.bodyBytes);
-        } else if (response.statusCode == 410) {
+        } else if (response.statusCode == 410 || response.statusCode == 404) {
           break;
         }
       } catch (error) {

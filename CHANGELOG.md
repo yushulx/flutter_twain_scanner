@@ -1,3 +1,7 @@
+## 1.0.2
+* Fixe Android build issue.
+* Check 404 error when fetching the document stream.
+
 ## 1.0.1
 * Support AGP 8 for Android.
 
