@@ -5,7 +5,7 @@ homepage: https://github.com/yushulx/flutter_twain_scanner
 repository: https://github.com/yushulx/flutter_twain_scanner
 
 environment:
-  sdk: '>=2.18.5 <3.0.0'
+  sdk: '>=2.18.5 <4.0.0'
   flutter: ">=2.5.0"
 
 dependencies:
