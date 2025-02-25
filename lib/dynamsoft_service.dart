@@ -123,10 +123,11 @@ class DynamsoftService {
   /// Returns a `List<Uint8List>` containing the byte streams of the images.
   Future<List<Uint8List>> getImageStreams(String host, String jobId) async {
     final List<Uint8List> streams = [];
-    final url = '$host/DWTAPI/ScanJobs/$jobId/NextDocument';
 
     while (true) {
       try {
+        var timestamp = DateTime.now().millisecondsSinceEpoch;
+        var url = '$host/DWTAPI/ScanJobs/$jobId/NextDocument?$timestamp';
         final response = await http.get(Uri.parse(url));
         if (response.statusCode == 200) {
           streams.add(response.bodyBytes);
