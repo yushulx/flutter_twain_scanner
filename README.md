@@ -25,7 +25,7 @@ To make Dynamsoft Service work:
         - [Dynamsoft-Service-Setup-mips64el.deb](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup-mips64el.deb)
         - [Dynamsoft-Service-Setup.rpm](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.rpm)
         
-2. Request a [free trial license](https://www.dynamsoft.com/customer/license/trialLicense?product=dwt).
+2. Request a [free trial license](https://www.dynamsoft.com/customer/license/trialLicense/?product=dcv&package=cross-platform).
 
 
 ## Dynamsoft Service Configuration

@@ -8,7 +8,7 @@ https://github.com/yushulx/flutter_twain_scanner/assets/2202306/0e8072c4-c324-48
     
     ![Dynamsoft Service configuration](https://www.dynamsoft.com/codepool/img/2023/09/dynamsoft-service-ip-configuration.png)
 
-3. Request a [trial license](https://www.dynamsoft.com/customer/license/trialLicense?product=dwt&source=flutter) and update the license in `lib/main.dart`.
+3. Request a [trial license](https://www.dynamsoft.com/customer/license/trialLicense/?product=dcv&package=cross-platform) and update the license in `lib/main.dart`.
     
     ```dart
     final Map<String, dynamic> parameters = {
