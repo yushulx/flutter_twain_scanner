@@ -23,7 +23,7 @@ class ScannerType {
 
 /// A service class for interacting with scanning devices and jobs.
 class DynamsoftService {
-  /// Fetches the list of available scanners from Dynamsoft Service.
+  /// Fetches the list of available scanners from Dynamic Web TWAIN Service.
   ///
   /// [host] - The host server URL.
   ///
