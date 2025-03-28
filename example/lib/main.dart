@@ -54,8 +54,9 @@ class _MyAppState extends State<MyApp> {
     };
 
     try {
-      final String jobId =
-          await dynamsoftService.scanDocument(host, parameters);
+      final Map<String, dynamic> job =
+          await dynamsoftService.createJob(host, parameters);
+      final String jobId = job['jobuid'];
       if (jobId != '') {
         List<Uint8List> paths =
             await dynamsoftService.getImageStreams(host, jobId);
@@ -65,6 +66,8 @@ class _MyAppState extends State<MyApp> {
             imagePaths.insertAll(0, paths);
           });
         }
+
+        await dynamsoftService.deleteJob(host, jobId);
       }
     } catch (error) {
       print('An error occurred: $error');

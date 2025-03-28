@@ -1,92 +1,81 @@
-# flutter_twain_scanner
+# Flutter Document Scanner SDK for TWAIN, WIA, SANE, ICA and eSCL Scanners
 
 ![Flutter TWAIN Dynamic Web TWAIN Service](https://www.dynamsoft.com/codepool/img/2023/09/flutter-twain-dynamsoft-service.gif)
 
 A Flutter plugin that enables you to develop cross-platform applications for digitizing documents from **TWAIN (32-bit/64-bit)**, **WIA**, **SANE**, **ICA** and **eSCL** scanners. The plugin offers callable methods for both [open-source TWAIN](https://github.com/twain/twain-samples) (**64-bit only**) and the **Dynamic Web TWAIN Service REST API**.
 
-## Dynamic Web TWAIN Service REST API
-By default, the REST API's host address is set to `http://127.0.0.1:18622`.
+## ⚙️ Prerequisites
 
-| Method | Endpoint        | Description                   | Parameters                         | Response                      |
-|--------|-----------------|-------------------------------|------------------------------------|-------------------------------|
-| GET    | `/DWTAPI/Scanners`    | Get a list of scanners  | None                               | `200 OK` with scanner list       |
-| POST   | `/DWTAPI/ScanJobs`    | Creates a scan job      | `license`, `device`, `config`      | `201 Created` with job ID    |
-| GET    | `/DWTAPI/ScanJobs/:id/NextDocument`| Retrieves a document image     | `id`: Job ID   | `200 OK` with image stream    |
-| DELETE | `/DWTAPI/ScanJobs/:id`| Deletes a scan job       | `id`: Job ID                      | `200 OK`              |
+### ✅ Install Dynamic Web TWAIN Service
 
+- **Windows**: [Dynamsoft-Service-Setup.msi](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.msi)  
+- **macOS**: [Dynamsoft-Service-Setup.pkg](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.pkg)  
+- **Linux**:  
+  - [Dynamsoft-Service-Setup.deb](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.deb)  
+  - [Dynamsoft-Service-Setup-arm64.deb](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup-arm64.deb)  
+  - [Dynamsoft-Service-Setup-mips64el.deb](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup-mips64el.deb)  
+  - [Dynamsoft-Service-Setup.rpm](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.rpm)
 
-To make Dynamic Web TWAIN Service work:
-1. Install Dynamic Web TWAIN Service.
-    - Windows: [Dynamsoft-Service-Setup.msi](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.msi)
-    - macOS: [Dynamsoft-Service-Setup.pkg](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.pkg)
-    - Linux: 
-        - [Dynamsoft-Service-Setup.deb](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.deb)
-        - [Dynamsoft-Service-Setup-arm64.deb](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup-arm64.deb)
-        - [Dynamsoft-Service-Setup-mips64el.deb](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup-mips64el.deb)
-        - [Dynamsoft-Service-Setup.rpm](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.rpm)
-        
-2. Request a [free trial license](https://www.dynamsoft.com/customer/license/trialLicense/?product=dcv&package=cross-platform).
+### 🔑 Get a License
 
+Request a [free trial license](https://www.dynamsoft.com/customer/license/trialLicense/?product=dcv&package=cross-platform).
 
-## Dynamic Web TWAIN Service Configuration
-After installing the Dynamic Web TWAIN Service, navigate to `http://127.0.0.1:18625/` in a web browser to configure the host and port settings. The default host IP address is set to 127.0.0.1. If you wish to make the service accessible from desktop, mobile, and web applications in your office,  you can update the host setting to a LAN IP address, such as **192.168.8.72**.
+## 🧩 Configuration
+
+After installation, open `http://127.0.0.1:18625/` in your browser to configure the **host** and **port** settings.
+
+> By default, the service is bound to `127.0.0.1`. To access it across the LAN, change the host to your local IP (e.g., `192.168.8.72`).
 
 ![dynamsoft-service-config](https://github.com/yushulx/dynamsoft-service-REST-API/assets/2202306/e2b1292e-dfbd-4821-bf41-70e2847dd51e)
 
 
-## API Usage
+## 📡 REST API Endpoints
 
-### Open Source TWAIN (Windows 64-bit only)
-- `Future<List<String>> getDataSources()`: Get the list of TWAIN compatible scanners.
-    ```dart
-    List<String> scanners = await _flutterTwainScannerPlugin.getDataSources();
-    ```
-- `Future<List<String>> scanDocument(int sourceIndex)`: Scan documents from a selected scanner.
-    ```dart
-    int index = _scanners.indexOf(_selectedScanner!);
-    List<String> documentPaths = await _flutterTwainScannerPlugin.scanDocument(index);
-    ```
+[https://www.dynamsoft.com/web-twain/docs/info/api/restful.html](https://www.dynamsoft.com/web-twain/docs/info/api/restful.html)
 
-### Dynamic Web TWAIN Service (Windows, macOS, Linux, Android, iOS and Web)
-- `Future<List<dynamic>> getDevices(String host, [int? scannerType])`: Get the list of TWAIN, WIA, and eSCL compatible scanners.
-    ```dart
-    final DynamsoftService dynamsoftService = DynamsoftService();
-    String host = 'http://127.0.0.1:18622';
-    final scanners = await dynamsoftService.getDevices(host, ScannerType.TWAINSCANNER | ScannerType.TWAINX64SCANNER);
-    ```
-- `Future<void> deleteJob(String host, String jobId)`: Deletes a scan job based on the provided job ID.
-    ```dart
-    await dynamsoftService.deleteJob(host, jobId);
-    ```
-- `Future<List<String>> getImageFiles(String host, String jobId, String directory)`: Saves images from a scan job to a directory.
-    ```dart
-    List<Uint8List> paths =
-            await dynamsoftService.getImageFiles(host, jobId, './');
-    ```
-- `Future<List<Uint8List>> getImageStreams(String host, String jobId)`: Retrieves image streams from a scan job.
-    ```dart
-    List<Uint8List> paths =
-            await dynamsoftService.getImageStreams(host, jobId);
-    ```
-- `Future<String> scanDocument(String host, Map<String, dynamic> parameters)`: Creates a new scan job using provided parameters.
-    ```dart
-    final Map<String, dynamic> parameters = {
-      'license':
-          'LICENSE-KEY',
-      'device': devices[index]['device'],
-    };
+## 📚 API Reference for Dynamic Web TWAIN Service
 
-    parameters['config'] = {
-      'IfShowUI': false,
-      'PixelType': 2,
-      'Resolution': 200,
-      'IfFeederEnabled': false,
-      'IfDuplexEnabled': false,
-    };
+### Scanner Methods
+
+| Method | Description |
+|--------|-------------|
+| `Future<List<dynamic>> getDevices(String host, [int? scannerType])` | Get a list of scanning devices |
+| `Future<Map<String, dynamic>> createJob(String host, Map<String, dynamic> parameters)` | Create a scanning job |
+| `Future<Map<String, dynamic>> checkJob(String host, String jobId)` | Check the status of a scan job |
+| `Future<Map<String, dynamic>> updateJob(String host, String jobId, Map<String, dynamic> parameters)` | Update a scan job (e.g., cancel it) |
+| `Future<void> deleteJob(String host, String jobId)` | Delete a scan job |
+| `Future<List<String>> getImageFiles(String host, String jobId, String directory)` | Download and save scanned images |
+| `Future<List<Uint8List>> getImageStreams(String host, String jobId)` | Get scanned images as byte streams |
+| `Future<Map<String, dynamic>> getImageInfo(String host, String jobId)` | Get info about the next scanned image |
+| `Future<Map<String, dynamic>> getScannerCapabilities(String host, String jobId)` | Get supported scanner settings |
+
+The scanner parameter configuration is based on [Dynamsoft Web TWAIN documentation](https://www.dynamsoft.com/web-twain/docs/info/api/Interfaces.html#DeviceConfiguration). 
+
+
+### Document Methods
+
+| Method | Description |
+|--------|-------------|
+| `Future<Map<String, dynamic>> createDocument(String host, Map<String, dynamic> parameters)` | Create a document |
+| `Future<Map<String, dynamic>> getDocumentInfo(String host, String docId)` | Get document metadata |
+| `Future<bool> deleteDocument(String host, String docId)` | Delete a document |
+| `Future<String> getDocumentFile(String host, String docId, String directory)` | Download a document PDF to local disk |
+| `Future<Uint8List?> getDocumentStream(String host, String docId)` | Get a document as a byte stream |
+| `Future<Map<String, dynamic>> insertPage(String host, String docId, Map<String, dynamic> parameters)` | Insert a new page into a document |
+| `Future<bool> deletePage(String host, String docId, String pageId)` | Delete a page from a document |
+
+
+## 🖥️ API Reference for Open Source TWAIN (Windows 64-bit only)
+
+### Scanner Methods
+
+| Method | Description |
+|--------|-------------|
+| `Future<List<String>> getDataSources()` | Get a list of TWAIN compatible scanners |
+| `Future<List<String>> scanDocument(int sourceIndex)` | Scan documents from a selected scanner |
+
+
+
+
+
     
-    final String jobId =
-          await dynamsoftService.scanDocument(host, parameters);
-    ```
-
-
-    The scanner parameter configuration is based on [Dynamsoft Web TWAIN documentation](https://www.dynamsoft.com/web-twain/docs/info/api/Interfaces.html#DeviceConfiguration). 
