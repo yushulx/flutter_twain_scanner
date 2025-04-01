@@ -1,5 +1,8 @@
+## 2.0.0
+* Added support for Dynamic Web TWAIN v19.
+
 ## 1.0.2
-* Fixe Android build issue.
+* Fixed Android build issue.
 * Check 404 error when fetching the document stream.
 
 ## 1.0.1
