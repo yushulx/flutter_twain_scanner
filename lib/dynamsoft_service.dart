@@ -78,6 +78,7 @@ class DynamsoftService {
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
+          'DWT-PRODUCT-KEY': parameters['license'] ?? '',
           'Content-Length': json.encode(parameters).length.toString()
         },
         body: json.encode(parameters),
@@ -352,7 +353,7 @@ class DynamsoftService {
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
-          'X-DICS-DOC-PASSWORD': parameters['password'] ?? '',
+          'DWT-DOC-PASSWORD': parameters['password'] ?? '',
           'Content-Length': json.encode(parameters).length.toString()
         },
         body: json.encode(parameters),

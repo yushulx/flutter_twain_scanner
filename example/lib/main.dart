@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   List<String> scannerNames = [];
   String? _selectedScanner;
   String host =
-      'http://192.168.8.72:18622'; // Visit http://127.0.0.1:18625/ and replace 127.0.0.1 with your LAN IP address to make the service accessible from other devices.
+      'http://127.0.0.1:18622'; // Visit http://127.0.0.1:18625/ and replace 127.0.0.1 with your LAN IP address to make the service accessible from other devices.
   final DynamsoftService dynamsoftService = DynamsoftService();
   List<Map<String, dynamic>> devices = [];
   List<Uint8List> imagePaths = [];

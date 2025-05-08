@@ -1,3 +1,6 @@
+## 2.0.1
+* Renamed custom headers for Dynamic Web TWAIN v19.1.
+
 ## 2.0.0
 * Added support for Dynamic Web TWAIN v19.
 
