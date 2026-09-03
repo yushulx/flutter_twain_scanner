@@ -2,7 +2,7 @@
 
 | Desktop (macOS) | Mobile (Android) |
 |-----------------|------------------|
-| ![Flutter TWAIN Scanner example app on macOS](screenshots/macos_scanner_list.png) | ![Flutter TWAIN Scanner example app on Android](screenshots/android_scanner_list.png) |
+| ![Flutter TWAIN Scanner example app on macOS](screenshots/macos_scanned_pages.png) | ![Flutter TWAIN Scanner example app on Android](screenshots/android_scanned_pages.png) |
 
 A pure Dart client for the [Dynamic Web TWAIN Service REST API](https://www.dynamsoft.com/web-twain/restfulapi/). The Dynamsoft service runs on the machine that is connected to the scanners, and your app talks to it over HTTP — no native code, so the same package works on **Android, iOS, web, Windows, macOS and Linux**.
 

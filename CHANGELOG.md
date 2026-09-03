@@ -5,6 +5,7 @@
 * Added `getScannerSettings`, `getNextPage`, `getPageStream` and `updateDocument` methods.
 * Replaced the silent error handling with `DynamsoftServiceException`.
 * Renamed `ScannerType` and `JobStatus` constants to lowerCamelCase.
+* Normalized the `next-page-info` response, which may be a JSON object or array depending on the service version.
 * Added unit tests and a Material 3 example app.
 
 ## 2.0.1

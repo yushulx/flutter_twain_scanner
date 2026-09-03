@@ -277,6 +277,10 @@ class DynamsoftService {
   /// [insertPage] to copy the page into a document. The returned list is empty
   /// when the job has no more pages (204).
   ///
+  /// The service wraps the page info either in a JSON array or in a single
+  /// JSON object depending on its version; both shapes are normalized to a
+  /// list here.
+  ///
   /// Throws a [DynamsoftServiceException] if the request fails.
   Future<List<Map<String, dynamic>>> getImageInfo(
     String host,
@@ -289,10 +293,15 @@ class DynamsoftService {
     );
     if (response.statusCode == 204) return [];
     final decoded = json.decode(response.body);
-    return [
-      for (final info in decoded as List)
-        Map<String, dynamic>.from(info as Map),
-    ];
+    if (decoded is Map) {
+      return [Map<String, dynamic>.from(decoded)];
+    }
+    if (decoded is List) {
+      return [
+        for (final info in decoded) Map<String, dynamic>.from(info as Map),
+      ];
+    }
+    throw const DynamsoftServiceException(0, 'Unexpected response format');
   }
 
   /// Fetches the next scanned page of the job identified by [jobId] as a

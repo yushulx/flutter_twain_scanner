@@ -186,6 +186,21 @@ void main() {
       expect(done, isEmpty);
     });
 
+    test('getImageInfo normalizes a single-object response to a list',
+        () async {
+      final service = DynamsoftService(
+        client: MockClient((request) async => _json({
+              'imageuid': 'page-1',
+              'url': '$host/api/device/scanners/jobs/job-1/next-page'
+                  '?page=page-1',
+            })),
+      );
+
+      final pages = await service.getImageInfo(host, 'job-1');
+      expect(pages, hasLength(1));
+      expect(pages.first['imageuid'], 'page-1');
+    });
+
     test('getNextPage returns null when the job has no more pages', () async {
       final service = DynamsoftService(
         client: MockClient((request) async => http.Response('', 204)),
