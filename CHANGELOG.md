@@ -1,3 +1,12 @@
+## 3.0.0
+
+* Rewrote the package in pure Dart, so it now supports Android, iOS, web, Windows, macOS and Linux.
+* Removed the native method channel implementations and the open-source TWAIN support. All scanning is done through the Dynamic Web TWAIN Service REST API.
+* Added `getScannerSettings`, `getNextPage`, `getPageStream` and `updateDocument` methods.
+* Replaced the silent error handling with `DynamsoftServiceException`.
+* Renamed `ScannerType` and `JobStatus` constants to lowerCamelCase.
+* Added unit tests and a Material 3 example app.
+
 ## 2.0.1
 * Renamed custom headers for Dynamic Web TWAIN v19.1.
 

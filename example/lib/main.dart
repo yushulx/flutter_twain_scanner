@@ -1,240 +1,348 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:flutter/services.dart';
 import 'package:flutter_twain_scanner/flutter_twain_scanner.dart';
-import 'package:flutter_twain_scanner/dynamsoft_service.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as path;
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ScannerApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+/// The default endpoint of the Dynamic Web TWAIN Service.
+const String _defaultHost = 'http://127.0.0.1:18625';
+
+/// The public trial license of Dynamic Web TWAIN. Request a 30-day trial
+/// license at https://www.dynamsoft.com/customer/license/trialLicense/.
+const String _trialLicense =
+    'DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==';
+
+class ScannerApp extends StatelessWidget {
+  const ScannerApp({super.key, this.service});
+
+  final DynamsoftService? service;
+
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Flutter TWAIN Scanner',
-      home: HomePage(), // Move your logic here
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+      home: ScannerPage(service: service),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class ScannerPage extends StatefulWidget {
+  const ScannerPage({super.key, this.service});
+
+  /// The service used for all Dynamic Web TWAIN Service requests. Defaults to
+  /// a [DynamsoftService]; tests can inject a stub instead.
+  final DynamsoftService? service;
+
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<ScannerPage> createState() => _ScannerPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  final _flutterTwainScannerPlugin = FlutterTwainScanner();
-  List<String> scannerNames = [];
-  String? _selectedScanner;
-  String host =
-      'http://127.0.0.1:18622'; // Visit http://127.0.0.1:18625/ and replace 127.0.0.1 with your LAN IP address to make the service accessible from other devices.
-  final DynamsoftService dynamsoftService = DynamsoftService();
-  List<Map<String, dynamic>> devices = [];
-  List<Uint8List> imagePaths = [];
-  String _docId = '';
+class _ScannerPageState extends State<ScannerPage> {
+  late final DynamsoftService _service = widget.service ?? DynamsoftService();
+  final TextEditingController _hostController =
+      TextEditingController(text: _defaultHost);
+
+  List<Map<String, dynamic>> _scanners = [];
+  Map<String, dynamic>? _selectedScanner;
+  String? _documentId;
+  bool _connected = false;
+  bool _scanning = false;
+  String? _serviceVersion;
+  final List<Uint8List> _pages = [];
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    _checkService();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    if (!mounted) return;
+  @override
+  void dispose() {
+    _hostController.dispose();
+    _service.close();
+    super.dispose();
   }
 
-  Future<void> _scanDocument(int index) async {
-    if (_docId.isEmpty) {
-      Map<String, dynamic> doc =
-          await dynamsoftService.createDocument(host, {});
+  String get _host => _hostController.text.trim();
 
-      _docId = doc['uid'];
-    }
-    final Map<String, dynamic> parameters = {
-      'license':
-          'DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==',
-      'device': devices[index]['device'],
-    };
-
-    parameters['config'] = {
-      'IfShowUI': false,
-      'PixelType': 2,
-      // 'XferCount': 1,
-      // 'PageSize': 1,
-      'Resolution': 200,
-      'IfFeederEnabled': false,
-      'IfDuplexEnabled': false,
-    };
-
+  Future<void> _checkService() async {
     try {
-      final Map<String, dynamic> job =
-          await dynamsoftService.createJob(host, parameters);
-      final String jobId = job['jobuid'];
-      if (jobId != '') {
-        // Check job status
-        // var info = await dynamsoftService.checkJob(host, jobId);
-        // print('Job status: ${info}');
-
-        // // Get capabilities
-        // info = await dynamsoftService.getScannerCapabilities(host, jobId);
-        // print('Capabilities: ${info}');
-
-        // info = await dynamsoftService
-        //     .updateJob(host, jobId, {'status': JobStatus.RUNNING});
-        // print('Update job status: ${info}');
-
-        List<Uint8List> paths =
-            await dynamsoftService.getImageStreams(host, jobId);
-
-        for (var i = 0; i < paths.length; i++) {
-          Map<String, dynamic> imageInfo =
-              await dynamsoftService.getImageInfo(host, jobId);
-
-          await dynamsoftService.insertPage(
-              host, _docId, {'password': '', 'source': imageInfo['url']});
-        }
-
-        if (paths.isNotEmpty) {
-          setState(() {
-            imagePaths.insertAll(0, paths);
-          });
-        }
-
-        await dynamsoftService.deleteJob(host, jobId);
-      }
-    } catch (error) {
-      print('An error occurred: $error');
+      final info = await _service.getServerInfo(_host);
+      if (!mounted) return;
+      setState(() {
+        _connected = info['compatible'] == true;
+        _serviceVersion = info['version']?.toString();
+      });
+    } on DynamsoftServiceException {
+      if (!mounted) return;
+      setState(() => _connected = false);
     }
   }
 
-  Future<void> _savePdfFile() async {
-    Uint8List? pdfDocumentStream =
-        await dynamsoftService.getDocumentStream(host, _docId);
+  Future<void> _listScanners() async {
+    try {
+      final scanners = await _service.getDevices(_host);
+      if (!mounted) return;
+      setState(() {
+        _scanners = scanners;
+        _selectedScanner = scanners.isNotEmpty ? scanners.first : null;
+      });
+      if (scanners.isEmpty) {
+        _showMessage('No scanner found on the service.');
+      }
+    } on DynamsoftServiceException catch (error) {
+      _showError('Listing scanners', error);
+    }
+  }
 
-    if (pdfDocumentStream == null) {
+  Future<void> _scanDocument() async {
+    final scanner = _selectedScanner;
+    if (scanner == null) {
+      _showMessage('Select a scanner first.');
       return;
     }
+    setState(() => _scanning = true);
+    try {
+      _documentId ??= await _service
+          .createDocument(_host, {}).then((doc) => doc['uid'] as String);
 
-    final dir = await getApplicationDocumentsDirectory();
-    final filePath = path.join(
-        dir.path, 'document_${DateTime.now().millisecondsSinceEpoch}.pdf');
-    final file = File(filePath);
-    await file.writeAsBytes(pdfDocumentStream);
+      final job = await _service.createJob(_host, {
+        'license': _trialLicense,
+        'device': scanner['device'],
+        'config': {
+          'IfShowUI': false,
+          'PixelType': 2,
+          'Resolution': 200,
+          'IfFeederEnabled': false,
+          'IfDuplexEnabled': false,
+        },
+      });
+      final jobId = job['jobuid'] as String;
+      try {
+        await _scanPages(jobId);
+      } finally {
+        await _service.deleteJob(_host, jobId);
+      }
+    } on DynamsoftServiceException catch (error) {
+      _showError('Scanning', error);
+    } finally {
+      if (mounted) setState(() => _scanning = false);
+    }
+  }
 
+  /// Copies every scanned page into the document and shows it in the gallery.
+  Future<void> _scanPages(String jobId) async {
+    while (true) {
+      final infos = await _service.getImageInfo(_host, jobId);
+      if (infos.isEmpty) break;
+
+      final source = infos.first['url'] as String?;
+      if (source != null && _documentId != null) {
+        await _service.insertPage(_host, _documentId!, {
+          'password': '',
+          'source': source,
+        });
+      }
+
+      final page = await _service.getNextPage(_host, jobId);
+      if (!mounted) return;
+      setState(() {
+        if (page != null) _pages.insert(0, page);
+      });
+    }
+  }
+
+  Future<void> _savePdf() async {
+    if (_documentId == null) {
+      _showMessage('Scan a document first.');
+      return;
+    }
+    try {
+      final stream = await _service.getDocumentStream(_host, _documentId!);
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath =
+          '${directory.path}/document_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      await File(filePath).writeAsBytes(stream);
+      if (!mounted) return;
+      _showMessage('PDF saved to $filePath');
+    } on DynamsoftServiceException catch (error) {
+      _showError('Saving the PDF', error);
+    }
+  }
+
+  void _showMessage(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('PDF saved to: $filePath')),
-    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _showError(String action, DynamsoftServiceException error) {
+    _showMessage('$action failed: ${error.message} (HTTP ${error.statusCode})');
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter TWAIN Scanner'),
+        title: const Text('TWAIN Scanner'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: _ConnectionBadge(
+              connected: _connected,
+              version: _serviceVersion,
+            ),
+          ),
+        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 12,
           children: [
-            Wrap(
-              spacing: 12,
-              runSpacing: 8,
+            TextField(
+              controller: _hostController,
+              decoration: InputDecoration(
+                labelText: 'Dynamic Web TWAIN Service host',
+                hintText: _defaultHost,
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: _checkService,
+                ),
+              ),
+            ),
+            Row(
               children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    devices.clear();
-                    scannerNames.clear();
-                    try {
-                      final scanners = await dynamsoftService.getDevices(
-                        host,
-                        ScannerType.TWAINSCANNER | ScannerType.TWAINX64SCANNER,
-                      );
-                      for (int i = 0; i < scanners.length; i++) {
-                        devices.add({
-                          'id': '${scanners[i]['device']}_$i',
-                          'name': scanners[i]['name'],
-                          'device': scanners[i]['device'],
-                        });
-                        scannerNames.add(scanners[i]['name']);
-                      }
-
-                      if (devices.isNotEmpty) {
-                        setState(() {
-                          _selectedScanner = devices[0]['id'];
-                        });
-                      }
-                    } catch (e) {
-                      print('List scanners error: $e');
-                    }
-                  },
-                  child: const Text('List Scanners'),
+                Expanded(
+                  child: DropdownButtonFormField<Map<String, dynamic>>(
+                    initialValue: _selectedScanner,
+                    decoration: const InputDecoration(
+                      labelText: 'Scanner',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      for (final scanner in _scanners)
+                        DropdownMenuItem(
+                          value: scanner,
+                          child: Text('${scanner['name']}'),
+                        ),
+                    ],
+                    onChanged: (scanner) =>
+                        setState(() => _selectedScanner = scanner),
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_selectedScanner != null) {
-                      final index = devices
-                          .indexWhere((d) => d['id'] == _selectedScanner);
-                      await _scanDocument(index);
-                    }
-                  },
-                  child: const Text('Scan Document'),
-                ),
-                ElevatedButton(
-                  onPressed: _savePdfFile,
-                  child: const Text('Save PDF'),
+                const SizedBox(width: 8),
+                IconButton.outlined(
+                  tooltip: 'List scanners',
+                  onPressed: _scanning ? null : _listScanners,
+                  icon: const Icon(Icons.document_scanner),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            DropdownButton(
-              isExpanded: true,
-              hint: const Text('Select a scanner'),
-              value: _selectedScanner,
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedScanner = newValue as String?;
-                });
-              },
-              items: devices.map((device) {
-                return DropdownMenuItem(
-                  value: device['id'],
-                  child: Text(device['name']),
-                );
-              }).toList(),
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: _scanning ? null : _scanDocument,
+                    icon: const Icon(Icons.photo_camera),
+                    label: const Text('Scan Document'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _scanning ? null : _savePdf,
+                    icon: const Icon(Icons.picture_as_pdf),
+                    label: const Text('Save PDF'),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
+            if (_scanning) const LinearProgressIndicator(),
             Expanded(
-              child: imagePaths.isEmpty
-                  ? Center(child: Image.asset('images/default.png'))
-                  : ListView.builder(
-                      itemCount: imagePaths.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: SizedBox(
-                            height: screenHeight * 0.5,
-                            child: Image.memory(
-                              imagePaths[index],
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        );
-                      },
+              child: _pages.isEmpty
+                  ? _EmptyGallery(scanning: _scanning)
+                  : GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 480,
+                        childAspectRatio: 0.75,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
+                      ),
+                      itemCount: _pages.length,
+                      itemBuilder: (context, index) => Card(
+                        clipBehavior: Clip.antiAlias,
+                        child: Image.memory(
+                          _pages[index],
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ConnectionBadge extends StatelessWidget {
+  const _ConnectionBadge({required this.connected, this.version});
+
+  final bool connected;
+  final String? version;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = connected ? Colors.green : Colors.red;
+    return Tooltip(
+      message: connected
+          ? 'Connected to the Dynamic Web TWAIN Service'
+          : 'The Dynamic Web TWAIN Service is not reachable',
+      child: Chip(
+        avatar: Icon(Icons.circle, size: 12, color: color),
+        label: Text(
+          connected ? (version ?? 'Online') : 'Offline',
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyGallery extends StatelessWidget {
+  const _EmptyGallery({required this.scanning});
+
+  final bool scanning;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.document_scanner,
+            size: 64,
+            color: Theme.of(context).colorScheme.outline,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            scanning ? 'Scanning...' : 'Scanned pages appear here',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ],
       ),
     );
   }

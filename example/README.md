@@ -1,26 +1,35 @@
-## Document Digitization App with Flutter 
+# flutter_twain_scanner Example
 
-https://github.com/yushulx/flutter_twain_scanner/assets/2202306/0e8072c4-c324-48a3-9ade-6543492f849e
+A cross-platform document scanning demo built with the `flutter_twain_scanner` package and the [Dynamic Web TWAIN Service REST API](https://www.dynamsoft.com/web-twain/restfulapi/).
+
+| Desktop (macOS) | Mobile (Android) |
+|-----------------|------------------|
+| ![Example app on macOS](../screenshots/macos_scanner_list.png) | ![Example app on Android](../screenshots/android_scanner_list.png) |
 
 ## Getting Started
-1. Install the [Dynamic Web TWAIN Service](https://www.dynamsoft.com/codepool/downloads/DynamsoftServiceSetup.msi) on a Windows PC that has one or more document scanners connected to it.
-2. Visit `http://127.0.0.1:18625/` in your browser and replace `127.0.0.1` with your LAN IP address. E.g. `http://192.168.8.72:18622`.
-    
-    ![Dynamic Web TWAIN Service configuration](https://www.dynamsoft.com/codepool/img/2023/09/dynamsoft-service-ip-configuration.png)
 
-3. Request a [trial license](https://www.dynamsoft.com/customer/license/trialLicense/?product=dcv&package=cross-platform) and update the license in `lib/main.dart`.
-    
-    ```dart
-    final Map<String, dynamic> parameters = {
-      'license':
-          'LICENSE-KEY',
-      'device': devices[index]['device'],
-    };
-    ```
-4. Build and run the app for **Windows**, **Linux**, **macOS**, **Android**, **iOS**, or **Web**. Ensure that the IP address of your device is on the same Local Area Network (LAN) as the PC to which the scanner is connected.
-    
-    ```dart
-    flutter run
-    ```
-    
-    ![Flutter TWAIN scanner Anrdoid](https://www.dynamsoft.com/codepool/img/2023/09/flutter-twain-scanner-android.jpg)
+1. Install the Dynamic Web TWAIN Service on the machine that is connected to the scanners:
+
+   - **Windows**: [Dynamsoft-Service-Setup.msi](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.msi)
+   - **macOS**: [Dynamsoft-Service-Setup.pkg](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.pkg)
+   - **Linux**: [Dynamsoft-Service-Setup.deb](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.deb), [Dynamsoft-Service-Setup.rpm](https://demo.dynamsoft.com/DWT/DWTResources/dist/DynamsoftServiceSetup.rpm)
+
+2. Request a [free 30-day trial license](https://www.dynamsoft.com/customer/license/trialLicense/?product=dcv&package=cross-platform) and replace `_trialLicense` in `lib/main.dart` with your own key.
+
+3. Run the app on any Flutter platform:
+
+   ```bash
+   flutter run -d macos   # or windows, linux, android, ios
+   ```
+
+   If the scanners are connected to another machine on the LAN, change the service host (for example `http://192.168.8.72:18625`) in the app.
+
+4. Click the scanner icon to list the scanners, select one and click **Scan Document**. The scanned pages appear in the gallery and are stored as a document by the service. Click **Save PDF** to download the document as a PDF file.
+
+## Regenerating the Screenshots
+
+The README screenshots are rendered with a golden test:
+
+```bash
+flutter test test/screenshot_golden_test.dart --update-goldens
+```
